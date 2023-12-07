@@ -1,0 +1,60 @@
+.editPostOverlay {
+    animation: editPostOverlay .5s ease-in-out forwards;
+  
+    @apply fixed inset-0 bg-black/60 z-[60] transition-all;
+  
+    &.closing {
+      animation-name: editPostOverlay-reverse;
+  
+      .panelOverlay {
+        animation-name: panelOverlay-reverse;
+        animation-duration: .3s;
+      }
+    }
+  }
+  
+  .panelOverlay {
+    animation: panelOverlay .5s ease-in-out forwards;
+  
+    @apply w-1/2 bg-white absolute right-0 top-0 bottom-0 px-8 py-8 flex flex-col overflow-auto;
+  }
+  
+  @keyframes editPostOverlay {
+    0% {
+      opacity: 0;
+    }
+  
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes editPostOverlay-reverse {
+    0% {
+      opacity: 1;
+    }
+  
+    100% {
+      opacity: 0;
+    }
+  }
+  
+  @keyframes panelOverlay {
+    0% {
+      transform: translateX(100%);
+    }
+  
+    100% {
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes panelOverlay-reverse {
+    0% {
+      transform: translateX(0);
+    }
+  
+    100% {
+      transform: translateX(100%);
+    }
+  }
