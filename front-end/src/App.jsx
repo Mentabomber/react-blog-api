@@ -2,8 +2,14 @@ import { useEffect, useState } from "react";
 import TextInput from "./components/inputs/TextInput";
 import PostEditDialog from "./components/PostEditDialog";
 import ConfirmDialog from "./components/ConfirmDialog";
+import {PostsList} from "./components/PostsList";
+import FabButton from "./components/FabButton";
+import { NewPostOverlay } from "./components/NewPostOverlay";
+import { PlusIcon } from '@heroicons/react/24/solid';
+
 
 function App() {
+  const [showNewPostOverlay, setShowNewPostOverlay] = useState(false);
   const [showEditPostOverlay, setShowEditPostOverlay] = useState(false);
 
   useEffect(() => {
@@ -14,49 +20,16 @@ function App() {
 
 
   const initialFormData = {
-    title: "Gita al mare in Grecia",
-    content: "Una bella gita al mare in Grecia con Simone",
+    title: "",
+    content: "",
     image: "",
-    tags: ["Viaggi","Sport"],
-    category: ["Viaggi"],
+    tags: [""],
+    category: [""],
     id: crypto.randomUUID(),
-    published: true
+    published: false
 
   };
-  const [postsList, setPostsList] = useState([
-
-    {
-      title: "Gita al mare",
-      content: "Una bella gita al mare con Simone",
-      image: "",
-      tags: ["Viaggi","Sport"],
-      category: ["Viaggi"],
-      id: crypto.randomUUID(),
-      published: false
   
-    },
-    {
-      title: "Gita in montagna",
-      content: "Una bella gita in montagna con Dedo",
-      image: "",
-      tags: ["Viaggi","Sport"],
-      category: ["Viaggi"],
-      id: crypto.randomUUID(),
-      published: false
-  
-    },
-    {
-      title: "Gita a Trieste",
-      content: "Una bella e calda giornata d'estate passata assieme a Davide a Trieste",
-      image: "",
-      tags: ["Viaggi","Sport"],
-      category: ["Viaggi"],
-      id: crypto.randomUUID(),
-      published: true
-  
-    } 
-
-  ]);
   const [formData, setFormData] = useState(initialFormData);
   const [editingId, setEditingId] = useState('');
   const [showAlert, setShowAlert] = useState(false);
@@ -242,75 +215,16 @@ function App() {
     <main>
     <div className="container mx-auto">
       <h1 className="text-4xl">I tuoi nuovi post</h1>
+      <FabButton onClick={() => setShowNewPostOverlay(true)}><PlusIcon className="group-hover:rotate-180 group-hover:scale-125 duration-500"></PlusIcon></FabButton>
 
-      <form className="flex flex-col gap-4 mx-auto py-8" onSubmit={handleFormSubmit} onReset={handleFormReset}>
-        <TextInput name="title" placeholder="Titolo post" label="Titolo" type="text"
-          value={formData.title}
-          onValueChange={(newValue) => updateFormData(newValue, 'title')}></TextInput>
-
-        <TextInput name="content" placeholder="Contenuto del post" label="Contenuto"
-          value={formData.content}
-          onValueChange={(newValue) => updateFormData(newValue, 'content')}></TextInput>
-
-        <TextInput name="file" placeholder="Immagine" label="Immagine" type="file"
-          value={formData.image}
-          onValueChange={(newValue) => updateFormData(newValue, 'file')}></TextInput>
-
-        <TextInput name="published" label="Pubblica" type="checkbox"
-          value={formData.published}
-          onValueChange={(newValue) => updateFormData(newValue, 'published')}></TextInput>
-
-        <TextInput name="category" label="Category" type="text"
-          value={formData.category}
-          onValueChange={(newValue) => updateFormData(newValue, 'category')}></TextInput>
-          <select value={formData.category} onChange={(e) => updateFormData(e.target.value, 'category')}>
-            <option value=""></option>
-            <option value="Viaggi" >Viaggi</option>
-            <option value="Politica" >Politica</option>
-            <option value="Cucina" >Cucina</option>
-            <option value="Sport" >Sport</option>
-          </select>
-
-        <div className="flex gap-4">
-          <label className=""><input type="checkbox" checked={formData.tags.includes('1')} value="1" onChange={handleTagsChange} /> Viaggi</label>
-          <label className=""><input type="checkbox" checked={formData.tags.includes('2')} value="2" onChange={handleTagsChange} /> Cucina</label>
-          <label className=""><input type="checkbox" checked={formData.tags.includes('3')} value="3" onChange={handleTagsChange} /> Lavoro</label>
-          <label className=""><input type="checkbox" checked={formData.tags.includes('4')} value="4" onChange={handleTagsChange} /> Politica</label>
-        </div>
-
-        <div className="flex gap-6">
-          <button className="px-4 py-3 bg-red-300 hover:bg-red-600"
-            type="reset">{editingId ? 'Annulla' : 'Reset'}</button>
-
-          <button className="px-4 py-3 bg-green-300 hover:bg-green-600"
-            type="submit">{editingId ? 'Salva modifiche' : 'Submit'}</button>
-        </div>
-      </form>
+      <NewPostOverlay show={showNewPostOverlay} onClose={() => setShowNewPostOverlay(false)}></NewPostOverlay>
+      
 
       {/* 
         Se showAlert è a true lo mostra, altrimenti no.
         Dopo 5 secondi che è visibile, lo dobbiamo nascondere.
        */}
       {showAlert && <div className="bg-green-300 p-8" >Post mandato!</div>}
-
-      <div className="border-t">
-        <ul>
-          {postsList.map((post) => (
-            <li key={post.id} className="flex py-4 border-b">{post.title} - {post.content}
-
-              <div className="flex gap-4 items-center ml-auto">
-                <button className="px-3 py-2 flex items-center justify-center bg-blue-300 disabled:bg-slate-300 disabled:text-slate-500 font-bold"
-                  onClick={() => editPost(post.id)}
-                  disabled={!!editingId}>Modifica</button>
-
-                <button className="w-6 h-6 flex items-center justify-center bg-red-500 disabled:bg-slate-300 text-white font-bold"
-                  onClick={() => removePost(post.id)}
-                  disabled={editingId === post.id}>X</button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
 
     {/* finestra dialog */}
@@ -325,7 +239,7 @@ function App() {
   ></PostEditDialog>
 )}
 
-
+  <PostsList></PostsList>
     <ConfirmDialog {...confirmProps}></ConfirmDialog>
   </main>
   );
