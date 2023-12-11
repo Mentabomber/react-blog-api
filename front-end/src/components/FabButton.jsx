@@ -7,4 +7,4 @@ export default function FabButton({ onClick, children }) {
         {children}
       </button>
     );
-};
+}

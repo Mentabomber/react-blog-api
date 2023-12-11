@@ -42,11 +42,22 @@ async function store(req, res){
   return res.json(newCategory);
 }
 
+async function showAllCategories(req, res){
 
+  const allCategories = await prisma.category
+  .findMany({
+    
+  })
+  
+  console.log(allCategories);
+  return res.json(allCategories);
+
+}
 
 
 module.exports = {
-  store
+  store,
+  showAllCategories
 }
   
   

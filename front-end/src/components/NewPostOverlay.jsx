@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react';
 import styles from '../css/modules/EditPostOverlay.module.css';
 
 const initialFormData = {
-  name: 'asdasd',
-  description: '',
-  price: 0,
-  vegan: false,
-  glutenFree: false,
-  available: false,
+  title: 'asdasd',
+  slug: 'asdasd',
+  content: '',
+  published: false,
   image: '',
-  ingredients: []
+  tags: [1,2],
+  categoryId: 1,
+  userId: 1
 };
 
 
@@ -19,6 +19,7 @@ export function NewPostOverlay({ show, onClose }) {
   const [closing, setClosing] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
   const [tagsList, setTagsList] = useState([]);
+  const [categoriesList, setCategoriesList] = useState([]);
 
   function handleClose() {
     setClosing(true);
@@ -35,10 +36,10 @@ export function NewPostOverlay({ show, onClose }) {
 
     let newValue = e.target.type === 'checkbox' ? checked : value;
 
-    // controllo se sto assegnando il valore alla proprietà ingredients
+    // controllo se sto assegnando il valore alla proprietà tags
     // se si, devo gestire il valore come se fosse un array
     if (key === "tags") {
-      let currentTags = formData.Tags;
+      let currentTags = formData.tags;
 
       if (checked) {
         currentTags.push(value);
@@ -57,16 +58,22 @@ export function NewPostOverlay({ show, onClose }) {
     });
   }
 
+  async function fetchCategories() {
+    const categories = await (await fetch("http://localhost:3307/categories/")).json();
+
+    setCategoriesList(categories);
+  }
+
   async function fetchTags() {
-    const tags = await (await fetch("http://localhost:3007/tags/")).json();
+    const tags = await (await fetch("http://localhost:3307/tags/")).json();
 
     setTagsList(tags);
   }
 
   async function handleFormSubmit(e) {
     e.preventDefault();
-
-    const response = await fetch("http://localhost:3007/posts/", {
+    console.log(formData , "formdata");
+    const response = await fetch("http://localhost:3307/posts/", {
       method: "post",
       headers: {
         "Content-Type": "application/json"
@@ -79,7 +86,9 @@ export function NewPostOverlay({ show, onClose }) {
 
   useEffect(() => {
     fetchTags();
+    fetchCategories();
   }, []);
+
 
   if (!show) return null;
 
@@ -97,20 +106,24 @@ export function NewPostOverlay({ show, onClose }) {
           <input type="text" value={formData.content} onChange={e => handleInputChange(e, "content")} id="content_input" className={inputClasses} />
         </div>
         <div className='mb-4'>
-          <label htmlFor="emozioni_input">Emozioni</label>
-          <input type="checkbox" value={formData.emozioni} onChange={e => handleInputChange(e, "emozioni")} id="emozioni_input" className={inputClasses} />
+          <label>Categories</label>
+
+          <div className='flex gap-3 flex-wrap'>
+            {categoriesList.map(category => {
+              return <label key={category.id}>
+                <input type="checkbox" value={category.id} onChange={e => handleInputChange(e, "categories")} id="categories_input" />
+                {category.type}
+              </label>;
+            })}
+          </div>
         </div>
         <div className='mb-4'>
-          <label htmlFor="viaggi_input">Viaggi</label>
-          <input type="checkbox" value={formData.viaggi} onChange={e => handleInputChange(e, "viaggi")} id="viaggi_input" className={inputClasses} />
-        </div>
-        <div className='mb-4'>
-          <label htmlFor="available_input">Disponibile</label>
-          <input type="checkbox" value={formData.available} onChange={e => handleInputChange(e, "available")} id="available_input" className={inputClasses} />
+          <label htmlFor="available_input">Pubblica</label>
+          <input type="checkbox" value={formData.published} onChange={e => handleInputChange(e, "published")} id="published_input" className={inputClasses} />
         </div>
         <div className='mb-4'>
           <label htmlFor="image_input">Immagine</label>
-          <input type="text" value={formData.image} onChange={e => handleInputChange(e, "image")} id="image_input" className={inputClasses} />
+          <input type="file" value={formData.image} onChange={e => handleInputChange(e, "image")} id="image_input" className={inputClasses} />
         </div>
         <div className='mb-4'>
           <label>Tags</label>
@@ -127,9 +140,9 @@ export function NewPostOverlay({ show, onClose }) {
       </form>
 
       <div className='flex gap-4'>
-        <button className='w-full bg-primary hover:bg-primaryDark px-8 py-4 rounded-lg text-white transition-colors'
-          form="tagForm" type='submit'>
-          Aggiungi
+        <button className='w-full bg-gray-200 hover:bg-gray-400 px-8 py-4 rounded-lg text-gray-800 transition-colors'
+          form="tagForm" type='submit' onClick={handleFormSubmit}>
+          Aggiungi 
         </button>
         <button className="w-full bg-gray-200 hover:bg-gray-400 px-8 py-4 rounded-lg text-gray-800 transition-colors"
           onClick={handleClose}>

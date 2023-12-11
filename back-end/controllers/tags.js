@@ -13,7 +13,20 @@ async function store(req, res){
   return res.json(newTag);
 }
 
+async function showAllTags(req, res){
+
+  const allTags = await prisma.tag
+  .findMany({
+    
+  })
+  
+  console.log(allTags);
+  return res.json(allTags);
+
+}
+
 
 module.exports = {
-  store
+  store,
+  showAllTags
 } 

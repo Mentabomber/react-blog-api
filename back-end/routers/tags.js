@@ -4,7 +4,7 @@ const tagsController = require("../controllers/tags");
 
 router.post("/", tagsController.store);
 
-// router.get("/:slug", tagsController.show);
+router.get("/", tagsController.showAllTags);
 
 // router.get("/", tagsController.showAll);
 

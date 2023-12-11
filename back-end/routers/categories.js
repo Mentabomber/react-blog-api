@@ -4,7 +4,7 @@ const categoriesController = require("../controllers/categories");
 
 router.post("/", categoriesController.store);
 
-// router.get("/:slug", categoriesController.show);
+router.get("/", categoriesController.showAllCategories);
 
 // router.get("/", categoriesController.showAll);
 
